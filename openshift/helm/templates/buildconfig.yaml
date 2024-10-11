@@ -16,15 +16,15 @@ spec:
   source:
     type: Git
     git:
-      uri: git@github.com:huylinhnl/robotorium-toolkit.git
+      uri:  {{ .Values.buildConfig.gitUri }}
       ref: {{ .Values.buildConfig.branch }}
     sourceSecret:
       name: github-ssh-sourcesecret
   strategy:
     type: Docker
     dockerStrategy:
-      # pullSecret:
-      #   name: artifactory-pullsecret
+      pullSecret:
+        name: artifactory-pullsecret
       noCache: true
       dockerfilePath: Dockerfile
   output:

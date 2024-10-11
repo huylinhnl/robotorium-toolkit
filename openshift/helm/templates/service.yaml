@@ -3,12 +3,18 @@ kind: Service
 metadata:
   name: {{ .Values.name }}
   namespace: {{ .Values.namespace }}
+  annotations:
+    service.alpha.openshift.io/serving-cert-secret-name: toolkit-tls  
 spec:
   type: ClusterIP
   ports:
-    - name: http
+    - name: app
       port: 8080
       protocol: TCP
-      targetPort: 8080
+      targetPort: robo-toolkit
+    - name: proxy
+      port: 8888
+      protocol: TCP
+      targetPort: oauth-proxy      
   selector:
     app: {{ .Values.name }}

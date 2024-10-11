@@ -1,0 +1,17 @@
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  resourceVersion: '43920'
+  name: istio-expose-route-basic
+  namespace: robotorium-idm
+spec:
+  podSelector:
+    matchLabels:
+      maistra.io/expose-route: 'true'
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              network.openshift.io/policy-group: ingress
+  policyTypes:
+    - Ingress

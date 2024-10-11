@@ -1,11 +1,12 @@
-name: toolkit
 namespace: robotorium-idm
 
+name: robo-toolkit
+serviceAccount: robo-toolkit
+
+buildConfig:
+  gitUri: git@github.com:huylinhnl/robotorium-toolkit.git
+
 imageStream:
-  name: toolkit
+  name: robo-toolkit
   tag: latest
 
-secrets:
-  rbotapigwcertificate:
-    certkey: pfx
-    certpasskey: pfx-pass

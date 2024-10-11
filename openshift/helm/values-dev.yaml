@@ -1,5 +1,5 @@
 buildConfig:
-  branch: main
+  branch: feature/toolkit
   outputImage: docker.io/huylinhnl/robo-toolkit:latest
 
 application:
