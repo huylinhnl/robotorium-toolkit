@@ -1,0 +1,132 @@
+﻿@page "/counter"
+@rendermode InteractiveServer
+
+@inject IConfiguration Configuration
+@inject IRequestMessageService RequestMessage
+
+<table>
+    <tr>
+        <th>Name</th>
+        <th>TargetSystemId</th>
+        <th>BaseURI</th>
+        <th>Privileges</th>
+    </tr>
+    <tr>
+        <td>@selectedApplication.Name</td>
+        <td>@selectedApplication.TargetSystemId</td>
+        <td>@selectedApplication.BaseURI</td>
+        <td>
+            <select class="form-control" @onchange="SetPrivilege">
+                @foreach (var privilege in selectedApplication.Privileges)
+                {
+                    <option value="@privilege">@privilege</option>
+                }
+            </select>
+        </td>
+    </tr>
+</table>
+
+<select class="form-control" @onchange="SetApplication">
+    @foreach (var application in Applications)
+    {
+        <option value="@application.Name">@application.Name</option>
+    }
+</select>
+
+
+<table>
+    <tr>
+        <th>Initials</th>
+        <th>FirstName</th>
+        <th>LastName</th>
+        <th>EmployeeNumber</th>
+        <th>Email</th>
+        <th>AccountName</th>
+        <th>AccountPW</th>
+    </tr>
+    <tr>
+        <td>@selectedUser.Initials</td>
+        <td>@selectedUser.FirstName</td>
+        <td>@selectedUser.LastName</td>
+        <td>@selectedUser.EmployeeNumber</td>
+        <td>@selectedUser.Email</td>
+        <td>@selectedUser.AccountName</td>
+        <td>@selectedUser.AccountPW</td>
+    </tr>
+</table>
+
+<select class="form-control" @onchange="SetTestUser">
+    @foreach (var testUser in TestUsers)
+    {
+        <option value="@testUser.EmployeeNumber">@testUser.EmployeeNumber</option>
+    }
+</select>
+
+<button class="btn btn-primary" @onclick="AddMessage">Add</button>
+<button class="btn btn-primary" @onclick="BlockMessage">Block</button>
+<button class="btn btn-primary" @onclick="UnblockMessage">UnBlock</button>
+<button class="btn btn-primary" @onclick="ModifyMessage">Modify</button>
+<button class="btn btn-primary" @onclick="DeleteMessage">Delete</button>
+<button class="btn btn-primary" @onclick="AddPrivilegeMessage">AddPrivilege</button>
+<button class="btn btn-primary" @onclick="DeletePrivilegeMessage">DeletePrivilege</button>
+
+<p role="status">@message</p>
+
+@code {
+
+    private string? message;
+
+    private TestUser? selectedUser;
+    private Application? selectedApplication;
+    private string? selectedPrivilege;
+
+    private List<Application> Applications = [];
+    private List<TestUser> TestUsers = [];
+
+    protected override void OnInitialized()
+    {
+        Applications = Configuration.GetSection("Applications").Get<List<Application>>()!;
+        TestUsers = Configuration.GetSection("TestUsers").Get<List<TestUser>>()!;
+        SetDefaults();
+    }
+
+    private void SetDefaults()
+    {
+        selectedApplication = Applications.FirstOrDefault();
+        RequestMessage.TargetSystemId = selectedApplication.TargetSystemId;
+
+        selectedPrivilege = selectedApplication.Privileges.First();
+
+        selectedUser = TestUsers.FirstOrDefault();
+        RequestMessage.TestUser = selectedUser;
+    }
+
+    private void SetApplication(ChangeEventArgs e)
+    {
+        var application = Applications.Where(w => w.Name == e.Value!.ToString()).FirstOrDefault() ?? null;
+        if (application is not null) selectedApplication = application;
+        RequestMessage.TargetSystemId = application.TargetSystemId;
+        selectedPrivilege = application.Privileges.First();
+    }
+
+    private void SetPrivilege(ChangeEventArgs e)
+    {
+        selectedPrivilege = e.Value!.ToString();
+    }
+
+    private void SetTestUser(ChangeEventArgs e)
+    {
+        var testUser = TestUsers.Where(w => w.EmployeeNumber == e.Value!.ToString()).FirstOrDefault() ?? null;
+        if (testUser is not null) selectedUser = testUser;
+        RequestMessage.TestUser = selectedUser;
+    }
+
+    private void AddMessage() => message = RequestMessage.AddMessage();
+    private void BlockMessage() => message = RequestMessage.BlockMessage();
+    private void UnblockMessage() => message = RequestMessage.UnblockMessage();
+    private void ModifyMessage() => message = RequestMessage.ModifyMessage();
+    private void DeleteMessage() => message = RequestMessage.DeleteMessage();
+    private void AddPrivilegeMessage() => message = RequestMessage.AddPrivilegeMessage(selectedPrivilege);
+    private void DeletePrivilegeMessage() => message = RequestMessage.DeletePrivilegeMessage(selectedPrivilege);
+
+}

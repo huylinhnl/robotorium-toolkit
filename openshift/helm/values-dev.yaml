@@ -1,0 +1,6 @@
+buildConfig:
+  branch: main
+  outputImage: docker.io/huylinhnl/robo-toolkit:latest
+
+application:
+  AppId: "toolkit"

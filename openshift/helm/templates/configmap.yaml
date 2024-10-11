@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: appsettings-{{ .Values.name }}
+  namespace: {{ .Values.namespace }}
+data: 
+  appsettings.json: | 
+    {
+      "Application": {{- toPrettyJson .Values.application | trim | nindent 6 }}
+    }

@@ -1,0 +1,11 @@
+name: toolkit
+namespace: robotorium-idm
+
+imageStream:
+  name: toolkit
+  tag: latest
+
+secrets:
+  rbotapigwcertificate:
+    certkey: pfx
+    certpasskey: pfx-pass

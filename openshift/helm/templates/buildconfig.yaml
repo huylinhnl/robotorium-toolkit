@@ -1,0 +1,33 @@
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata:
+  name: robotorium-toolkit-build
+  namespace: {{ .Values.namespace }}
+  labels:
+    name: robotorium-toolkit-build
+spec:
+  resources:
+    limits:
+      cpu: 500m
+      memory: 2Gi
+    requests:
+      cpu: 500m
+      memory: 2Gi
+  source:
+    type: Git
+    git:
+      uri: git@github.com:huylinhnl/robotorium-toolkit.git
+      ref: {{ .Values.buildConfig.branch }}
+    sourceSecret:
+      name: github-ssh-sourcesecret
+  strategy:
+    type: Docker
+    dockerStrategy:
+      # pullSecret:
+      #   name: artifactory-pullsecret
+      noCache: true
+      dockerfilePath: Dockerfile
+  output:
+    to:
+      kind: DockerImage
+      name: {{ .Values.buildConfig.outputImage }}
