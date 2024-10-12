@@ -1,0 +1,19 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: toolkit
+  namespace: robotorium-idm
+spec:
+  hosts:
+  - "*"
+  gateways:
+  - toolkit-gateway
+  http:
+  - match:
+    - uri:
+        exact: /toolkit
+    route:
+    - destination:
+        host: robo-toolkit
+        port:
+          number: 8080

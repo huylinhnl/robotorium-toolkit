@@ -49,7 +49,7 @@ apiVersion: networking.istio.io/v1beta1
 kind: ServiceEntry
 metadata:
   name: k8s-api-ext
-  namespace: robotorium-idm
+  namespace: istio-system 
 spec:
   hosts:
     - kubernetes.default.svc.cluster.local
@@ -80,3 +80,126 @@ spec:  # also consider using a workloadSelector to fine tune your K8s API permis
         - default/kubernetes.default.svc.cluster.local
         - default/etcd.default.svc.cluster.local
         - robotorium-servicemesh/*
+
+
+
+
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: service-mesh-demo-gateway
+  namespace: robotorium-servicemesh
+spec:
+  selector:
+    istio: ingressgateway # use istio default controller
+  servers:
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts:
+    - "*" 
+
+
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: virtual-service-orders
+  namespace: robotorium-servicemesh
+spec:
+  hosts:
+  - "*"
+  gateways:
+  - service-mesh-demo-gateway ###############################################
+  http:                       # This Virtual Service listens for requests
+  - match:                    # coming in on this Gateway, service-mesh-demo-gateway
+    - uri:                    ###############################################
+        exact: /     ###############################################
+    route:           # Any root request, for example, a request coming from:
+    - destination:   # http://istio-ingressgateway-istio-system.apps.mydomain.eastus.aroapp.io/
+        host: robo-toolkit # will be forwarded to the Kubernetes service named orders at port 8080
+        port:        ###############################################
+          number: 8888           
+
+
+
+curl --location --request POST 'http://istio-ingressgateway-robotorium-servicemesh.apps-crc.testing/' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+  "customer": {
+    "id": 3,
+    "firstName": "Barney",
+    "lastName": "Kelly",
+    "email": "Barney.Kelly@gmail.com"
+  },
+  "product": {
+    "id": 2,
+    "category": "Food",
+    "description": "Blue Olives",
+    "price": 39.99
+  },
+  "creditCard": {
+    "number": "6767-8196-4877-7940-326",
+    "expirationDate": "2023-09-08T01:14:59.686Z",
+    "cvv": "851",
+    "cardHolder": {
+      "id": 3,
+      "firstName": "Barney",
+      "lastName": "Kelly",
+      "email": "Barney.Kelly@gmail.com"
+    }
+  },
+  "purchaseDate": 1669844628249
+}'          
+
+
+
+
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: robo-toolkit-gateway
+  namespace: istio-system
+spec:
+  selector:
+    istio: ingressgateway # use istio default controller
+  servers:
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts:
+    - "*"
+
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata: 
+  name: allow-robo-toolkit 
+  namespace: robotorium-idm
+spec: 
+  action: ALLOW
+  rules:
+   - to:
+      - operation:
+         paths:
+           - /*
+  selector:
+     matchLabels: 
+        app: robo-toolkit
+
+
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata: 
+  name: allow-robo-toolkit
+  namespace: robotorium-idm
+spec: 
+  action: ALLOW
+  rules:
+   - to:
+      - operation:
+         paths:
+           - /*
+  selector:
+     matchLabels: 
+       app: robo-toolkit        
