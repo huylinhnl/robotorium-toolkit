@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -16,6 +17,39 @@ namespace Discord.OAuth2
         public DiscordHandler(IOptionsMonitor<DiscordOptions> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock)
             : base(options, logger, encoder, clock)
         {
+        }
+
+        protected override async Task<AuthenticationTicket> CreateTicketAsync(ClaimsIdentity identity, AuthenticationProperties properties, OAuthTokenResponse tokens)
+        {
+
+            var request = new HttpRequestMessage(HttpMethod.Get, Options.UserInformationEndpoint);
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", tokens.AccessToken);
+            request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+            var response = await Backchannel.SendAsync(request, Context.RequestAborted);
+            if (!response.IsSuccessStatusCode)
+                throw new HttpRequestException($"Failed to retrieve Discord user information ({response.StatusCode}).");
+
+            //This has been modified to support net core 2
+            var payload = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+
+
+            var claims = new List<Claim>
+{
+    new Claim(ClaimTypes.Name, "Alice")
+};
+
+            var identity2 = new ClaimsIdentity(claims, "MyAuthenticationScheme");
+
+            var principal = new ClaimsPrincipal(identity);
+
+            var context = new OAuthCreatingTicketContext(new ClaimsPrincipal(identity2), properties, Context, Scheme, Options, Backchannel, tokens, payload.RootElement);
+
+            context.RunClaimActions();
+
+            await Events.CreatingTicket(context);
+
+            return new AuthenticationTicket(context.Principal, context.Properties, Scheme.Name);
         }
 
 
