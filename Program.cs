@@ -17,7 +17,7 @@ builder.Services.AddAuthentication(opt =>
 {
     opt.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
     opt.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-    opt.DefaultChallengeScheme = DiscordDefaults.AuthenticationScheme;
+    opt.DefaultChallengeScheme = OpenshiftDefaults.AuthenticationScheme;
 }).AddCookie()
     .AddDiscord(x =>
     {

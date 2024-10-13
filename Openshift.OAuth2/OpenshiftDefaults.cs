@@ -1,6 +1,6 @@
 ﻿namespace Discord.OAuth2
 {
-    public static class DiscordDefaults
+    public static class OpenshiftDefaults
     {
         public const string AuthenticationScheme = "Discord";
         public const string DisplayName = "Discord";

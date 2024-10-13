@@ -12,16 +12,16 @@ using System.Xml;
 
 namespace Discord.OAuth2
 {
-    /// <summary> Configuration options for <see cref="DiscordHandler"/>. </summary>
-    public class DiscordOptions : OAuthOptions
+    /// <summary> Configuration options for <see cref="OpenshiftHandler"/>. </summary>
+    public class OpenshiftOptions : OAuthOptions
     {
-        /// <summary> Initializes a new <see cref="DiscordOptions"/>. </summary>
-        public DiscordOptions()
+        /// <summary> Initializes a new <see cref="OpenshiftOptions"/>. </summary>
+        public OpenshiftOptions()
         {
             CallbackPath = new PathString("/signin-openshift");
-            AuthorizationEndpoint = DiscordDefaults.AuthorizationEndpoint;
-            TokenEndpoint = DiscordDefaults.TokenEndpoint;
-            UserInformationEndpoint = DiscordDefaults.UserInformationEndpoint;
+            AuthorizationEndpoint = OpenshiftDefaults.AuthorizationEndpoint;
+            TokenEndpoint = OpenshiftDefaults.TokenEndpoint;
+            UserInformationEndpoint = OpenshiftDefaults.UserInformationEndpoint;
             //Scope.Add("identify");
 
             ClaimActions.MapJsonKey(ClaimTypes.NameIdentifier, "id", ClaimValueTypes.UInteger64);

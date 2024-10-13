@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="Discord.OAuth2\Discord.OAuth2.csproj" />
+    <None Include="Openshift.OAuth2\Discord.OAuth2.csproj" />
   </ItemGroup>
 
   <ItemGroup>

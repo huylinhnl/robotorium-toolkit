@@ -12,9 +12,9 @@ using System.Threading.Tasks;
 
 namespace Discord.OAuth2
 {
-    internal class DiscordHandler : OAuthHandler<DiscordOptions>
+    internal class OpenshiftHandler : OAuthHandler<OpenshiftOptions>
     {
-        public DiscordHandler(IOptionsMonitor<DiscordOptions> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock)
+        public OpenshiftHandler(IOptionsMonitor<OpenshiftOptions> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock)
             : base(options, logger, encoder, clock)
         {
         }
