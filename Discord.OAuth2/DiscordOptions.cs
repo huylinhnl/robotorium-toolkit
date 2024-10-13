@@ -11,7 +11,7 @@ namespace Discord.OAuth2
         /// <summary> Initializes a new <see cref="DiscordOptions"/>. </summary>
         public DiscordOptions()
         {
-            CallbackPath = new PathString("/signin-discord");
+            CallbackPath = new PathString("/");
             AuthorizationEndpoint = DiscordDefaults.AuthorizationEndpoint;
             TokenEndpoint = DiscordDefaults.TokenEndpoint;
             //UserInformationEndpoint = DiscordDefaults.UserInformationEndpoint;
