@@ -37,17 +37,23 @@ spec:
                 cpu: 200m
                 memory: "150Mi" 
           ports:
-            - name: robo-toolkit
-              containerPort: 8080
+            - containerPort: 8080
               protocol: TCP                
           env:
             - name: ASPNETCORE_URLS
-              value: "https://*:8080"
+              value: "https://*:7143"
+            - name: ASPNETCORE_Kestrel__Certificates__Default__Password
+              value: ""              
+            - name: ASPNETCORE_Kestrel__Certificates__Default__Path
+              value: "/app/cert.pfx"              
           volumeMounts:
             - mountPath: /app/appsettings.json
               name: appsettings-volume
               subPath: appsettings.json
-
+            - name: certificatesvolume
+              mountPath: /app/cert.pfx
+              subPath: cert.pfx
+              readOnly: true
         # - name: oauth-proxy
         #   image: >-
         #     quay.io/openshift/origin-oauth-proxy:4.13
@@ -68,11 +74,11 @@ spec:
         #     - name: oauth-proxy
         #       containerPort: 8888    
         #       protocol: TCP
-          volumeMounts:
-            - mountPath: /etc/tls/private
-              name: secret-{{ .Values.name }}-tls
-            - mountPath: /etc/proxy/secrets
-              name: {{ .Values.name }}-proxy    
+          # volumeMounts:
+          #   - mountPath: /etc/tls/private
+          #     name: secret-{{ .Values.name }}-tls
+          #   - mountPath: /etc/proxy/secrets
+          #     name: {{ .Values.name }}-proxy    
                        
       imagePullSecrets:
         - name: artifactory-pullsecret
@@ -91,5 +97,11 @@ spec:
       - name: secret-{{ .Values.name }}-tls
         secret:
             defaultMode: 420
-            secretName: toolkit-tls                   
+            secretName: toolkit-tls       
+      - name: certificatesvolume
+        secret:
+          secretName: robo-toolkit-secret
+          items:
+          - key: certificate
+            path: cert.pfx                       
 

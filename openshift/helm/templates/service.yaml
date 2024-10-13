@@ -11,10 +11,10 @@ metadata:
 spec:
   type: ClusterIP
   ports:
-    - name: app
+    - name: https
       port: 8080
       protocol: TCP
-      targetPort: robo-toolkit
+      targetPort: 7143
     # - name: proxy
     #   port: 8888
     #   protocol: TCP

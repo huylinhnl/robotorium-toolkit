@@ -8,7 +8,6 @@ using RoboToolkit.Components;
 using RoboToolkit.Extentions;
 
 var builder = WebApplication.CreateBuilder(args);
-AntiForgeryConfig.UniqueClaimTypeIdentifier = ClaimTypes.Email;
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
@@ -24,7 +23,7 @@ builder.Services.AddAuthentication(opt =>
     {
         x.AppId = "custom-oauth";//Configuration["Discord:AppId"];
         x.AppSecret = "sha256~Adfler9dfgXDH_Fc7Adfler9dfgXDHFc7";// Configuration["Discord:AppSecret"];
-        //  x.Scope.Add("guilds");
+        // x.Scope.Add("guilds");
 
         //Required for accessing the oauth2 token in order to make requests on the user's behalf, ie. accessing the user's guild list
         x.SaveTokens = true;
@@ -56,7 +55,6 @@ app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
 
-
 app.UseAuthentication();
 app.UseAuthorization();
 
@@ -64,7 +62,6 @@ app.UseAuthorization();
 app.UseEndpoints(endpoints =>
 {
     endpoints.MapDefaultControllerRoute();
-    //endpoints.MapBlazorHub();
 });
 
 

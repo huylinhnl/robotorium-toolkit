@@ -10,7 +10,7 @@ spec:
     name: {{ .Values.name }}
     weight: 100
   port:
-    targetPort: app
+    targetPort: https
   tls:
     termination: edge
     insecureEdgeTerminationPolicy: Redirect
