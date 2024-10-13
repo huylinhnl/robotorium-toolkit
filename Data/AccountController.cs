@@ -29,6 +29,12 @@ namespace BlazorLoginDiscord.Data
         }
 
 
+        [HttpGet]
+        public IActionResult Signin(string returnUrl = "/")
+        {
+            return Challenge(new AuthenticationProperties { RedirectUri = returnUrl }, "Discord");
+        }
+
 
         [HttpGet]
         public async Task<IActionResult> LogOut(string returnUrl = "/")
