@@ -11,13 +11,13 @@ metadata:
 spec:
   type: ClusterIP
   ports:
-    # - name: app
-    #   port: 8080
-    #   protocol: TCP
-    #   targetPort: robo-toolkit
-    - name: proxy
-      port: 8888
+    - name: app
+      port: 8080
       protocol: TCP
-      targetPort: oauth-proxy      
+      targetPort: robo-toolkit
+    # - name: proxy
+    #   port: 8888
+    #   protocol: TCP
+    #   targetPort: oauth-proxy      
   selector:
     app: {{ .Values.name }}
