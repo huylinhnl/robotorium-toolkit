@@ -1,6 +1,19 @@
 ﻿<Router AppAssembly="typeof(Program).Assembly">
     <Found Context="routeData">
-        <RouteView RouteData="routeData" DefaultLayout="typeof(Layout.MainLayout)" />
+
+
+        <AuthorizeRouteView RouteData="routeData" DefaultLayout="@typeof(Layout.MainLayout)">
+            <Authorizing>
+                <p>Determining session state, please wait...</p>
+            </Authorizing>
+        <!--The NotAuthorized tag is optional but is currently configured to use the RedirectToLogin page in order to automatically attempt to log a user in if they access an authorized page without logging in.-->
+        <NotAuthorized>
+                <RoboToolkit.Components.Pages.RedirectToLogin />
+        </NotAuthorized>
+        </AuthorizeRouteView>
+
         <FocusOnNavigate RouteData="routeData" Selector="h1" />
     </Found>
+
+
 </Router>
