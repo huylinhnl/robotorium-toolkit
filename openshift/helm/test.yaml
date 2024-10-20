@@ -3,13 +3,21 @@ apiVersion: networking.istio.io/v1beta1
 kind: Gateway
 metadata:
   name: robo-toolkit-gateway ## name needs to match with VirtualService spec.gateways
+<<<<<<< HEAD
   namespace: robotorium-idm
+=======
+  namespace: robotorium-servicemesh
+>>>>>>> 7257ef65ef57eb9d6f25d1be40905b01f91414c0
 spec:
   selector:
     istio: ingressgateway
   servers:
     - hosts:
+<<<<<<< HEAD
         - 'robo-toolkit-istio-system.apps-crc.testing'
+=======
+        - 'robo-toolkit-robotorium-servicemesh.apps.d01.az.services.corp'
+>>>>>>> 7257ef65ef57eb9d6f25d1be40905b01f91414c0
       port:
         name: https
         number: 443
@@ -43,13 +51,18 @@ spec:
   hosts:
   - "*"
   gateways:
+<<<<<<< HEAD
   - robo-toolkit-gateway
+=======
+  - robotorium-servicemesh/robo-toolkit-gateway
+>>>>>>> 7257ef65ef57eb9d6f25d1be40905b01f91414c0
   http:
   - match:
     route:
     - destination:
         host: robo-toolkit
         port:
+<<<<<<< HEAD
           number: 8080
 
 
@@ -96,6 +109,31 @@ spec:
 #     - number: 443
 #       name: https-k8s
 #       protocol: HTTPS
+=======
+          number: 8888
+
+---
+apiVersion: networking.istio.io/v1beta1
+kind: ServiceEntry
+metadata:
+  name: k8s-api-ext
+  namespace: robotorium-idm
+spec:
+  hosts:
+    - kubernetes.default.svc.cluster.local
+  addresses:
+    - 172.30.0.1
+  endpoints:
+    - address: 172.30.0.1
+  exportTo:
+    - "*"
+  location: MESH_EXTERNAL
+  resolution: STATIC
+  ports:
+    - number: 443
+      name: https-k8s
+      protocol: HTTPS
+>>>>>>> 7257ef65ef57eb9d6f25d1be40905b01f91414c0
 # apiVersion: networking.istio.io/v1alpha3
 # kind: DestinationRule
 # metadata:
@@ -120,9 +158,13 @@ metadata:
     service: robo-toolkit
 spec:
   ports:
+<<<<<<< HEAD
   # - port: 8888
   #   name: http
   - port: 8080
+=======
+  - port: 8888
+>>>>>>> 7257ef65ef57eb9d6f25d1be40905b01f91414c0
     name: http
   selector:
     app: robo-toolkit
@@ -136,8 +178,12 @@ metadata:
   labels:
     account: robo-toolkit    
   annotations:
+<<<<<<< HEAD
     serviceaccounts.openshift.io/oauth-redirectreference.primary: '{"kind":"OAuthRedirectReference","apiVersion":"v1","reference":{"kind":"Route","name":"robo-toolkit"}}'
     # serviceaccounts.openshift.io/oauth-redirecturi.primary: https://robo-toolkit-istio-system.apps-crc.testing
+=======
+    serviceaccounts.openshift.io/oauth-redirectreference.primary: '{"kind":"OAuthRedirectReference","apiVersion":"v1","reference":{"kind":"Route","name":"robo-toolkit-robotorium-servicemesh"}}'
+>>>>>>> 7257ef65ef57eb9d6f25d1be40905b01f91414c0
 
 ---
 apiVersion: apps/v1
@@ -162,6 +208,7 @@ spec:
     spec:
       serviceAccountName: robo-toolkit
       containers:
+<<<<<<< HEAD
       # - name: oauth-proxy
       #   image: >-
       #       quay.io/openshift/origin-oauth-proxy:4.13
@@ -187,16 +234,50 @@ spec:
       #         name: secret-robo-toolkit-tls
       #       - mountPath: /etc/proxy/secrets
       #         name: robo-toolkit-proxy    
+=======
+      - name: oauth-proxy
+        image: >-
+            quay.io/openshift/origin-oauth-proxy:4.13
+        args:
+            - -provider=openshift
+            - -https-address=
+            - -http-address=:8888
+            - -email-domain=*
+            - -upstream=http://robo-toolkit:8080
+            - -tls-cert=/etc/tls/private/tls.crt
+            - -tls-key=/etc/tls/private/tls.key
+            - -cookie-secret-file=/etc/proxy/secrets/session_secret
+            - -openshift-ca=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+            - -openshift-service-account=robo-toolkit
+            - -skip-auth-regex=^/metrics
+            # - -openshift-sar={"resource":"namespaces","resourceName":"robotorium-idm","namespace":"robotorium-idm","verb":"get"}
+        ports:
+            - name: oauth-proxy
+              containerPort: 8888    
+              protocol: TCP
+        volumeMounts:
+            - mountPath: /etc/tls/private
+              name: secret-robo-toolkit-tls
+            - mountPath: /etc/proxy/secrets
+              name: robo-toolkit-proxy    
+>>>>>>> 7257ef65ef57eb9d6f25d1be40905b01f91414c0
 
       - name: robo-toolkit
         env:
             - name: ASPNETCORE_URLS
               value: 'http://*:8080'
         ports:
+<<<<<<< HEAD
             - name: http
               containerPort: 8080
               protocol: TCP
         image: 'huylinhnl/robo-toolkit:latest'
+=======
+            - name: robo-toolkit
+              containerPort: 8080
+              protocol: TCP
+        image: 'bintray.az.unix.corp:5000/robotorium-idm-docker-d01/robo-toolkit@sha256:659f8e1c3c7f194cc5b34e5ae6353590342d65a7750b2e2179ecb5d4b47c8153'
+>>>>>>> 7257ef65ef57eb9d6f25d1be40905b01f91414c0
         imagePullPolicy: IfNotPresent
         volumeMounts:
             - name: appsettings-volume
@@ -221,6 +302,10 @@ spec:
 
       imagePullSecrets:
         - name: artifactory-pullsecret
+<<<<<<< HEAD
+=======
+      image: 'bintray.az.unix.corp:5000/robotorium-idm-docker-d01/robo-toolkit@sha256:659f8e1c3c7f194cc5b34e5ae6353590342d65a7750b2e2179ecb5d4b47c8153'        
+>>>>>>> 7257ef65ef57eb9d6f25d1be40905b01f91414c0
 ---
 kind: Secret
 apiVersion: v1
@@ -304,7 +389,14 @@ spec:
     name: robo-toolkit
     weight: 100
   port:
+<<<<<<< HEAD
     targetPort: http
   tls:
     termination: reencrypt
   wildcardPolicy: None
+=======
+    targetPort: https-query
+  tls:
+    termination: reencrypt
+  wildcardPolicy: None
+>>>>>>> 7257ef65ef57eb9d6f25d1be40905b01f91414c0
