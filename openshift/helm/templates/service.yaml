@@ -11,13 +11,13 @@ metadata:
 spec:
   type: ClusterIP
   ports:
-    - name: https
-      port: 8080
-      protocol: TCP
-      targetPort: 7143
-    # - name: proxy
-    #   port: 8888
+    # - name: https
+    #   port: 8080
     #   protocol: TCP
-    #   targetPort: oauth-proxy      
+    #   targetPort: 7143
+    - name: https
+      port: 8888
+      protocol: TCP
+      targetPort: 8888 
   selector:
     app: {{ .Values.name }}

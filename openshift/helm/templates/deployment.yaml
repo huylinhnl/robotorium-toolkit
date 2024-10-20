@@ -36,12 +36,12 @@ spec:
               limits:
                 cpu: 200m
                 memory: "150Mi" 
-          ports:
-            - containerPort: 8080
-              protocol: TCP                
+          # ports:
+          #   - containerPort: 8080
+          #     protocol: TCP                
           env:
             - name: ASPNETCORE_URLS
-              value: "https://*:7143"
+              value: "https://*:8080"
             - name: ASPNETCORE_Kestrel__Certificates__Default__Password
               value: ""              
             - name: ASPNETCORE_Kestrel__Certificates__Default__Path
@@ -54,31 +54,43 @@ spec:
               mountPath: /app/cert.pfx
               subPath: cert.pfx
               readOnly: true
-        # - name: oauth-proxy
-        #   image: >-
-        #     quay.io/openshift/origin-oauth-proxy:4.13
-        #   args:
-        #     - -provider=openshift
-        #     - -https-address=:8888
-        #     - -http-address=
-        #     - -email-domain=*
-        #     - -upstream=http://localhost:8080
-        #     - -tls-cert=/etc/tls/private/tls.crt
-        #     - -tls-key=/etc/tls/private/tls.key
-        #     - -cookie-secret-file=/etc/proxy/secrets/session_secret
-        #     - -openshift-ca=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt
-        #     - -openshift-service-account={{ .Values.serviceAccount }}
-        #     - -skip-auth-regex=^/metrics
-        #     - -openshift-sar={"resource":"namespaces","resourceName":"{{ .Values.namespace }}","namespace":"{{ .Values.namespace }}","verb":"get"}
-        #   ports:
-        #     - name: oauth-proxy
-        #       containerPort: 8888    
-        #       protocol: TCP
-          # volumeMounts:
-          #   - mountPath: /etc/tls/private
-          #     name: secret-{{ .Values.name }}-tls
-          #   - mountPath: /etc/proxy/secrets
-          #     name: {{ .Values.name }}-proxy    
+
+        - name: oauth-proxy
+          image: >-
+            quay.io/openshift/origin-oauth-proxy:4.13
+          args:
+            - -provider=openshift
+            - -https-address=
+            - -http-address=:8888
+            - -email-domain=*
+            - -upstream=http://127.0.0.1:8080
+            - -tls-cert=/etc/tls/private/tls.crt
+            - -custom-templates-dir=/custom-templates-dir
+            - -tls-key=/etc/tls/private/tls.key
+            - -cookie-secret-file=/etc/proxy/secrets/session_secret
+            - -openshift-ca=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+            - -openshift-service-account={{ .Values.serviceAccount }}
+            - -skip-auth-regex=^/var/www/static/
+            - -request-logging=true
+            # - -openshift-sar={"resource":"namespaces","resourceName":"{{ .Values.namespace }}","namespace":"{{ .Values.namespace }}","verb":"get"}
+          ports:
+            - name: oauth-proxy
+              containerPort: 8888    
+              protocol: TCP
+          volumeMounts:
+            - mountPath: /etc/tls/private
+              name: secret-{{ .Values.name }}-tls
+            - mountPath: /etc/proxy/secrets
+              name: {{ .Values.name }}-proxy    
+            - name: signin
+              mountPath: /custom-templates-dir/sign_in.html   
+              subPath: sign_in.html    
+            - name: error
+              mountPath: /custom-templates-dir/error.html 
+              subPath: error.html    
+            - name: icon
+              mountPath:  /var/www/static/a.png
+              subPath: a.png
                        
       imagePullSecrets:
         - name: artifactory-pullsecret
@@ -105,3 +117,24 @@ spec:
           - key: certificate
             path: cert.pfx                       
 
+      - name: signin
+        configMap:
+            name: {{ .Values.name }}-signin
+            items:
+              - key: sign_in.html
+                path: sign_in.html
+            defaultMode: 420
+      - name: error
+        configMap:
+            name: {{ .Values.name }}-error
+            items:
+              - key: error.html
+                path: error.html
+            defaultMode: 420
+      - name: icon
+        configMap:
+            name: {{ .Values.name }}-icon
+            items:
+              - key: icon.ico
+                path: icon.ico
+            defaultMode: 420            

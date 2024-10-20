@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.name }}-icon
+  namespace: {{ .Release.Namespace }}
+data:
+  icon.ico: |
+  {{- include "icon.ico" . | nindent 4 }}

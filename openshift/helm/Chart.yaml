@@ -1,5 +1,5 @@
 apiVersion: v2
-name: robotorium-idm-sapariba
+name: toolkit
 description: A Helm chart for robotorium-idm-sapariba automation
 type: application
 version: 0.1.0

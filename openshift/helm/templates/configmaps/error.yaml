@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.name }}-error
+  namespace: {{ .Release.Namespace }}
+data:
+  error.html: |
+  {{- include "error.html" . | nindent 4 }}
